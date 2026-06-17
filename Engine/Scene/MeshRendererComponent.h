@@ -37,7 +37,19 @@ public:
         return color;
     }
 
+    void SetVisible(bool newVisible)
+    {
+        visible = newVisible;
+    }
+
+    bool IsVisible() const
+    {
+        return visible;
+    }
+
 private:
     const Mesh* mesh = nullptr;
     DirectX::XMFLOAT4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+    bool visible = true;
 };

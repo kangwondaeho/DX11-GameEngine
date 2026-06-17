@@ -115,6 +115,11 @@ void Application::RenderScene()
             continue;
         }
 
+        if (!meshRenderer->IsVisible())
+        {
+            continue;
+        }
+
         const Mesh* mesh = meshRenderer->GetMesh();
 
         if (!mesh)

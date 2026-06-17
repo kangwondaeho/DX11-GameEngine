@@ -49,28 +49,34 @@ void Scene::Initialize(
     cube1->GetTransform().position = { -1.5f, 0.0f, 0.0f };
     cube1->GetTransform().scale = { 1.0f, 1.0f, 1.0f };
     cube1->AddComponent<RotatorComponent>(0.75f, 1.5f, 0.0f);
-    cube1->AddComponent<MeshRendererComponent>(
-        cubeMesh,
-        XMFLOAT4(1.0f, 0.4f, 0.4f, 1.0f)
-    );
+
+    MeshRendererComponent* cube1Renderer =
+        cube1->AddComponent<MeshRendererComponent>(
+            cubeMesh,
+            XMFLOAT4(0.6f, 1.0f, 0.5f, 1.0f)
+        );
 
     GameObject* cube2 = CreateGameObject("Cube2");
     cube2->GetTransform().position = { 1.5f, 0.0f, 0.0f };
     cube2->GetTransform().scale = { 0.75f, 0.75f, 0.75f };
     cube2->AddComponent<RotatorComponent>(1.2f, 0.5f, 0.0f);
-    cube2->AddComponent<MeshRendererComponent>(
-        cubeMesh,
-        XMFLOAT4(0.4f, 0.8f, 1.0f, 1.0f)
-    );
+
+    MeshRendererComponent* cube2Renderer =
+        cube2->AddComponent<MeshRendererComponent>(
+            cubeMesh,
+            XMFLOAT4(0.6f, 1.0f, 0.5f, 1.0f)
+        );
 
     GameObject* cube3 = CreateGameObject("Cube3");
     cube3->GetTransform().position = { 0.0f, 1.3f, 0.0f };
     cube3->GetTransform().scale = { 0.5f, 0.5f, 0.5f };
     cube3->AddComponent<RotatorComponent>(0.3f, 1.0f, 1.5f);
-    cube3->AddComponent<MeshRendererComponent>(
-        cubeMesh,
-        XMFLOAT4(0.6f, 1.0f, 0.5f, 1.0f)
-    );
+
+    MeshRendererComponent* cube3Renderer =
+        cube3->AddComponent<MeshRendererComponent>(
+            cubeMesh,
+            XMFLOAT4(0.6f, 1.0f, 0.5f, 1.0f)
+        );
 
     GameObject* floor = CreateGameObject("Floor");
     floor->GetTransform().position = { 0.0f, -1.0f, 0.0f };
