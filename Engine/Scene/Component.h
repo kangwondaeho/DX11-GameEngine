@@ -12,6 +12,16 @@ public:
         owner = ownerObject;
     }
 
+    void SetEnabled(bool newEnabled)
+    {
+        enabled = newEnabled;
+    }
+
+    bool IsEnabled() const
+    {
+        return enabled;
+    }
+
     void StartInternal()
     {
         if (started)
@@ -31,4 +41,5 @@ protected:
 
 private:
     bool started = false;
+    bool enabled = true;
 };

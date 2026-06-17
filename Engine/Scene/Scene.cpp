@@ -59,7 +59,10 @@ void Scene::Initialize(
     GameObject* cube2 = CreateGameObject("Cube2");
     cube2->GetTransform().position = { 1.5f, 0.0f, 0.0f };
     cube2->GetTransform().scale = { 0.75f, 0.75f, 0.75f };
-    cube2->AddComponent<RotatorComponent>(1.2f, 0.5f, 0.0f);
+    RotatorComponent* cube2Rotator =
+        cube2->AddComponent<RotatorComponent>(1.2f, 0.5f, 0.0f);
+
+    cube2Rotator->SetEnabled(true);
 
     MeshRendererComponent* cube2Renderer =
         cube2->AddComponent<MeshRendererComponent>(

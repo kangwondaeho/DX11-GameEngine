@@ -9,6 +9,11 @@ void GameObject::Update(float deltaTime)
 
     for (auto& component : components)
     {
+        if (!component->IsEnabled())
+        {
+            continue;
+        }
+
         component->StartInternal();
         component->Update(deltaTime);
     }
