@@ -11,7 +11,12 @@ using namespace DirectX;
 
 struct TransformConstantBuffer
 {
-    XMMATRIX worldViewProjection;
+    DirectX::XMMATRIX worldViewProjection;
+};
+
+struct MaterialConstantBuffer
+{
+    DirectX::XMFLOAT4 baseColor;
 };
 
 bool D3D11Renderer::Initialize(HWND hwnd, int width, int height)
@@ -109,6 +114,11 @@ bool D3D11Renderer::Initialize(HWND hwnd, int width, int height)
     }
 
     if (!CreateConstantBuffer())
+    {
+        return false;
+    }
+
+    if (!CreateMaterialConstantBuffer())
     {
         return false;
     }
@@ -377,7 +387,8 @@ void D3D11Renderer::DrawMesh(
     const Mesh& mesh,
     DirectX::FXMMATRIX worldMatrix,
     DirectX::CXMMATRIX viewMatrix,
-    DirectX::CXMMATRIX projectionMatrix)
+    DirectX::CXMMATRIX projectionMatrix,
+    const DirectX::XMFLOAT4& color)
 {
     using namespace DirectX;
 
@@ -400,7 +411,47 @@ void D3D11Renderer::DrawMesh(
         constantBuffer.GetAddressOf()
     );
 
+    MaterialConstantBuffer materialData = {};
+    materialData.baseColor = color;
+
+    context->UpdateSubresource(
+        materialConstantBuffer.Get(),
+        0,
+        nullptr,
+        &materialData,
+        0,
+        0
+    );
+
+    context->PSSetConstantBuffers(
+        1,
+        1,
+        materialConstantBuffer.GetAddressOf()
+    );
+
     mesh.Draw(context.Get());
+}
+
+bool D3D11Renderer::CreateMaterialConstantBuffer()
+{
+    D3D11_BUFFER_DESC bufferDesc = {};
+    bufferDesc.ByteWidth = sizeof(MaterialConstantBuffer);
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+    HRESULT hr = device->CreateBuffer(
+        &bufferDesc,
+        nullptr,
+        materialConstantBuffer.GetAddressOf()
+    );
+
+    if (FAILED(hr))
+    {
+        MessageBox(nullptr, L"Create material constant buffer failed", L"Error", MB_OK);
+        return false;
+    }
+
+    return true;
 }
 
 void D3D11Renderer::EndFrame()

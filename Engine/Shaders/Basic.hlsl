@@ -3,6 +3,11 @@ cbuffer TransformBuffer : register(b0)
     matrix worldViewProjection;
 };
 
+cbuffer MaterialBuffer : register(b1)
+{
+    float4 baseColor;
+};
+
 struct VSInput
 {
     float3 position : POSITION;
@@ -25,5 +30,5 @@ PSInput VSMain(VSInput input)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return input.color;
+    return input.color * baseColor;
 }

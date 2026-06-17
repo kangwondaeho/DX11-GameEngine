@@ -16,27 +16,39 @@ void Scene::Initialize(float aspectRatio, const Mesh* cubeMesh, const Mesh* plan
     cube1->GetTransform().position = { -1.5f, 0.0f, 0.0f };
     cube1->GetTransform().scale = { 1.0f, 1.0f, 1.0f };
     cube1->AddComponent<RotatorComponent>(0.75f, 1.5f, 0.0f);
-    cube1->AddComponent<MeshRendererComponent>(cubeMesh);
+    cube1->AddComponent<MeshRendererComponent>(
+        cubeMesh,
+        XMFLOAT4(1.0f, 0.4f, 0.4f, 1.0f)
+    );
     gameObjects.push_back(std::move(cube1));
 
     auto cube2 = std::make_unique<GameObject>();
     cube2->GetTransform().position = { 1.5f, 0.0f, 0.0f };
     cube2->GetTransform().scale = { 0.75f, 0.75f, 0.75f };
     cube2->AddComponent<RotatorComponent>(1.2f, 0.5f, 0.0f);
-    cube2->AddComponent<MeshRendererComponent>(cubeMesh);
+    cube2->AddComponent<MeshRendererComponent>(
+        cubeMesh,
+        XMFLOAT4(0.4f, 0.8f, 1.0f, 1.0f)
+    );
     gameObjects.push_back(std::move(cube2));
 
     auto cube3 = std::make_unique<GameObject>();
     cube3->GetTransform().position = { 0.0f, 1.3f, 0.0f };
     cube3->GetTransform().scale = { 0.5f, 0.5f, 0.5f };
     cube3->AddComponent<RotatorComponent>(0.3f, 1.0f, 1.5f);
-    cube3->AddComponent<MeshRendererComponent>(cubeMesh);
+    cube3->AddComponent<MeshRendererComponent>(
+        cubeMesh,
+        XMFLOAT4(0.6f, 1.0f, 0.5f, 1.0f)
+    );
     gameObjects.push_back(std::move(cube3));
 
     auto floor = std::make_unique<GameObject>();
     floor->GetTransform().position = { 0.0f, -1.0f, 0.0f };
     floor->GetTransform().scale = { 1.0f, 1.0f, 1.0f };
-    floor->AddComponent<MeshRendererComponent>(planeMesh);
+    floor->AddComponent<MeshRendererComponent>(
+        planeMesh,
+        XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f)
+    );
     gameObjects.push_back(std::move(floor));
 }
 

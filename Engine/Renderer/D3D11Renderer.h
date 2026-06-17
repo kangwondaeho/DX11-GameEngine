@@ -30,7 +30,8 @@ public:
         const Mesh& mesh,
         DirectX::FXMMATRIX worldMatrix,
         DirectX::CXMMATRIX viewMatrix,
-        DirectX::CXMMATRIX projectionMatrix
+        DirectX::CXMMATRIX projectionMatrix,
+        const DirectX::XMFLOAT4& color
     );
 
     void EndFrame();
@@ -40,6 +41,7 @@ private:
     bool CreateDepthStencilBuffer(int width, int height);
     bool CreateShaderResources();
     bool CreateConstantBuffer();
+    bool CreateMaterialConstantBuffer();
 
 private:
     Microsoft::WRL::ComPtr<ID3D11Device> device;
@@ -47,11 +49,11 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
 
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView;
-
     Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilBuffer;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthStencilView;
 
     Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> materialConstantBuffer;
 
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
     Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;

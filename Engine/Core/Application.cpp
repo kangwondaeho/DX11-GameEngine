@@ -61,7 +61,8 @@ int Application::Run()
                 *mesh,
                 gameObject->GetTransform().GetWorldMatrix(),
                 camera.GetViewMatrix(),
-                camera.GetProjectionMatrix()
+                camera.GetProjectionMatrix(),
+                meshRenderer->GetColor()
             );
         }
 
