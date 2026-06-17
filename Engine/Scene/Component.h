@@ -12,8 +12,23 @@ public:
         owner = ownerObject;
     }
 
+    void StartInternal()
+    {
+        if (started)
+        {
+            return;
+        }
+
+        Start();
+        started = true;
+    }
+
+    virtual void Start() {}
     virtual void Update(float deltaTime) {}
 
 protected:
     GameObject* owner = nullptr;
+
+private:
+    bool started = false;
 };

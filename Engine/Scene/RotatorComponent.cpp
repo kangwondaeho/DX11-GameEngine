@@ -1,8 +1,14 @@
 #include "RotatorComponent.h"
 #include "GameObject.h"
 
+#include <Windows.h>
+
 RotatorComponent::RotatorComponent(float xSpeed, float ySpeed, float zSpeed)
     : xSpeed(xSpeed), ySpeed(ySpeed), zSpeed(zSpeed)
+{
+}
+
+void RotatorComponent::Start()
 {
 }
 

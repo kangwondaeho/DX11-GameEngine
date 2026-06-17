@@ -7,6 +7,7 @@ class RotatorComponent : public Component
 public:
     RotatorComponent(float xSpeed, float ySpeed, float zSpeed);
 
+    void Start() override;
     void Update(float deltaTime) override;
 
 private:
