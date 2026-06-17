@@ -3,12 +3,29 @@
 #include <memory>
 #include <vector>
 #include <utility>
+#include <string>
+
 #include "Transform.h"
 #include "Component.h"
 
 class GameObject
 {
 public:
+    explicit GameObject(const std::string& name = "GameObject")
+        : name(name)
+    {
+    }
+
+    const std::string& GetName() const
+    {
+        return name;
+    }
+
+    void SetName(const std::string& newName)
+    {
+        name = newName;
+    }
+
     Transform& GetTransform()
     {
         return transform;
@@ -48,6 +65,8 @@ public:
     void Update(float deltaTime);
 
 private:
+    std::string name;
+
     Transform transform;
     std::vector<std::unique_ptr<Component>> components;
 };
