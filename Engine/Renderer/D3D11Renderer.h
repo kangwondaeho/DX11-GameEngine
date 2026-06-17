@@ -15,7 +15,8 @@ public:
 private:
     bool CreateRenderTarget();
     bool CreateDepthStencilBuffer(int width, int height);
-    bool CreateQuadResources();
+    bool CreateCubeResources();
+    bool CreateConstantBuffer();
 
 private:
     Microsoft::WRL::ComPtr<ID3D11Device> device;
@@ -29,10 +30,15 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
 
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
     Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
     Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
 
     UINT indexCount = 0;
+
+    int renderWidth = 0;
+    int renderHeight = 0;
+    float rotationAngle = 0.0f;
 };

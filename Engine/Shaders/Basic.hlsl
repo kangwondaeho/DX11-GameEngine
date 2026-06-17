@@ -1,3 +1,8 @@
+cbuffer TransformBuffer : register(b0)
+{
+    matrix worldViewProjection;
+};
+
 struct VSInput
 {
     float3 position : POSITION;
@@ -13,7 +18,7 @@ struct PSInput
 PSInput VSMain(VSInput input)
 {
     PSInput output;
-    output.position = float4(input.position, 1.0f);
+    output.position = mul(float4(input.position, 1.0f), worldViewProjection);
     output.color = input.color;
     return output;
 }

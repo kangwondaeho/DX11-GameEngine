@@ -1,14 +1,22 @@
 #include "D3D11Renderer.h"
-#include <cstring>
+
+#include <DirectXMath.h>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
+using namespace DirectX;
+
 struct Vertex
 {
     float position[3];
     float color[4];
+};
+
+struct TransformConstantBuffer
+{
+    XMMATRIX worldViewProjection;
 };
 
 bool D3D11Renderer::Initialize(HWND hwnd, int width, int height)
@@ -85,7 +93,15 @@ bool D3D11Renderer::Initialize(HWND hwnd, int width, int height)
 
     context->RSSetViewports(1, &viewport);
 
-    if (!CreateQuadResources())
+    renderWidth = width;
+    renderHeight = height;
+
+    if (!CreateCubeResources())
+    {
+        return false;
+    }
+
+    if (!CreateConstantBuffer())
     {
         return false;
     }
@@ -178,24 +194,51 @@ bool CompileShaderFromFile(
     return true;
 }
 
-bool D3D11Renderer::CreateQuadResources()
+bool D3D11Renderer::CreateCubeResources()
 {
     Vertex vertices[] =
     {
-        // position                  // color
-        { { -0.5f,  0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } }, // 0: 왼쪽 위
-        { {  0.5f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } }, // 1: 오른쪽 위
-        { {  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }, // 2: 오른쪽 아래
-        { { -0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } }, // 3: 왼쪽 아래
+        // 앞면
+        { { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+        { {  0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+        { {  0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+        { { -0.5f, -0.5f, -0.5f }, { 1.0f, 1.0f, 0.0f, 1.0f } },
+
+        // 뒷면
+        { { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f } },
+        { {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f, 1.0f, 1.0f } },
+        { {  0.5f, -0.5f,  0.5f }, { 1.0f, 1.0f, 1.0f, 1.0f } },
+        { { -0.5f, -0.5f,  0.5f }, { 0.2f, 0.2f, 0.2f, 1.0f } },
     };
 
     UINT indices[] =
     {
+        // 앞면
         0, 1, 2,
-        0, 2, 3
+        0, 2, 3,
+
+        // 뒷면
+        4, 6, 5,
+        4, 7, 6,
+
+        // 왼쪽
+        4, 0, 3,
+        4, 3, 7,
+
+        // 오른쪽
+        1, 5, 6,
+        1, 6, 2,
+
+        // 위
+        4, 5, 1,
+        4, 1, 0,
+
+        // 아래
+        3, 2, 6,
+        3, 6, 7
     };
 
-    indexCount = 6;
+    indexCount = static_cast<UINT>(indexCount = sizeof(indices) / sizeof(UINT));
 
     D3D11_BUFFER_DESC vertexBufferDesc = {};
     vertexBufferDesc.ByteWidth = sizeof(vertices);
@@ -363,6 +406,47 @@ void D3D11Renderer::Render()
     context->VSSetShader(vertexShader.Get(), nullptr, 0);
     context->PSSetShader(pixelShader.Get(), nullptr, 0);
 
+    rotationAngle += 0.01f;
+
+    float aspectRatio = static_cast<float>(renderWidth) / static_cast<float>(renderHeight);
+
+    XMMATRIX world = XMMatrixRotationY(rotationAngle) * XMMatrixRotationX(rotationAngle * 0.5f);
+
+    XMVECTOR eyePosition = XMVectorSet(0.0f, 0.0f, -3.0f, 0.0f);
+    XMVECTOR focusPosition = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+    XMVECTOR upDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+    XMMATRIX view = XMMatrixLookAtLH(
+        eyePosition,
+        focusPosition,
+        upDirection
+    );
+
+    XMMATRIX projection = XMMatrixPerspectiveFovLH(
+        XM_PIDIV4,
+        aspectRatio,
+        0.1f,
+        100.0f
+    );
+
+    TransformConstantBuffer transformData = {};
+    transformData.worldViewProjection = XMMatrixTranspose(world * view * projection);
+
+    context->UpdateSubresource(
+        constantBuffer.Get(),
+        0,
+        nullptr,
+        &transformData,
+        0,
+        0
+    );
+
+    context->VSSetConstantBuffers(
+        0,
+        1,
+        constantBuffer.GetAddressOf()
+    );
+
     context->DrawIndexed(indexCount, 0, 0);
 
     swapChain->Present(1, 0);
@@ -402,6 +486,28 @@ bool D3D11Renderer::CreateDepthStencilBuffer(int width, int height)
     if (FAILED(hr))
     {
         MessageBox(nullptr, L"Create depth stencil view failed", L"Error", MB_OK);
+        return false;
+    }
+
+    return true;
+}
+
+bool D3D11Renderer::CreateConstantBuffer()
+{
+    D3D11_BUFFER_DESC bufferDesc = {};
+    bufferDesc.ByteWidth = sizeof(TransformConstantBuffer);
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+    HRESULT hr = device->CreateBuffer(
+        &bufferDesc,
+        nullptr,
+        constantBuffer.GetAddressOf()
+    );
+
+    if (FAILED(hr))
+    {
+        MessageBox(nullptr, L"Create constant buffer failed", L"Error", MB_OK);
         return false;
     }
 
