@@ -64,6 +64,17 @@ bool D3D11Renderer::Initialize(HWND hwnd, int width, int height)
         return false;
     }
 
+    if (!CreateDepthStencilBuffer(width, height))
+    {
+        return false;
+    }
+
+    context->OMSetRenderTargets(
+        1,
+        renderTargetView.GetAddressOf(),
+        depthStencilView.Get()
+    );
+
     D3D11_VIEWPORT viewport = {};
     viewport.TopLeftX = 0.0f;
     viewport.TopLeftY = 0.0f;
@@ -109,12 +120,6 @@ bool D3D11Renderer::CreateRenderTarget()
         MessageBox(nullptr, L"CreateRenderTargetView failed", L"Error", MB_OK);
         return false;
     }
-
-    context->OMSetRenderTargets(
-        1,
-        renderTargetView.GetAddressOf(),
-        nullptr
-    );
 
     return true;
 }
@@ -327,6 +332,13 @@ void D3D11Renderer::Render()
         clearColor
     );
 
+    context->ClearDepthStencilView(
+        depthStencilView.Get(),
+        D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+        1.0f,
+        0
+    );
+
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
 
@@ -354,4 +366,44 @@ void D3D11Renderer::Render()
     context->DrawIndexed(indexCount, 0, 0);
 
     swapChain->Present(1, 0);
+}
+
+bool D3D11Renderer::CreateDepthStencilBuffer(int width, int height)
+{
+    D3D11_TEXTURE2D_DESC depthBufferDesc = {};
+    depthBufferDesc.Width = width;
+    depthBufferDesc.Height = height;
+    depthBufferDesc.MipLevels = 1;
+    depthBufferDesc.ArraySize = 1;
+    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthBufferDesc.SampleDesc.Count = 1;
+    depthBufferDesc.SampleDesc.Quality = 0;
+    depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    HRESULT hr = device->CreateTexture2D(
+        &depthBufferDesc,
+        nullptr,
+        depthStencilBuffer.GetAddressOf()
+    );
+
+    if (FAILED(hr))
+    {
+        MessageBox(nullptr, L"Create depth stencil buffer failed", L"Error", MB_OK);
+        return false;
+    }
+
+    hr = device->CreateDepthStencilView(
+        depthStencilBuffer.Get(),
+        nullptr,
+        depthStencilView.GetAddressOf()
+    );
+
+    if (FAILED(hr))
+    {
+        MessageBox(nullptr, L"Create depth stencil view failed", L"Error", MB_OK);
+        return false;
+    }
+
+    return true;
 }
