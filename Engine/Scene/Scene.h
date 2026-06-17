@@ -8,11 +8,18 @@
 #include "Camera.h"
 
 class Mesh;
+class Input;
 
 class Scene
 {
 public:
-    void Initialize(float aspectRatio, const Mesh* cubeMesh, const Mesh* planeMesh);
+    void Initialize(
+        float aspectRatio,
+        const Mesh* cubeMesh,
+        const Mesh* planeMesh,
+        Input* input
+    );
+
     void Update(float deltaTime);
 
     GameObject* CreateGameObject(const std::string& name = "GameObject");

@@ -14,16 +14,18 @@ bool Application::Initialize(HINSTANCE hInstance, int nCmdShow)
         return false;
     }
 
+    input.Initialize(window.GetHandle());
+
     const float aspectRatio =
         static_cast<float>(WindowWidth) / static_cast<float>(WindowHeight);
 
     scene.Initialize(
         aspectRatio,
         &renderer.GetCubeMesh(),
-        &renderer.GetPlaneMesh()
+        &renderer.GetPlaneMesh(),
+        &input
     );
 
-    input.Initialize(window.GetHandle());
     timer.Initialize();
 
     return true;
@@ -62,8 +64,6 @@ int Application::Run()
 
         input.Update(window.GetHandle());
 
-        HandleInput(deltaTime);
-
         scene.Update(deltaTime);
 
         Camera& camera = scene.GetMainCamera();
@@ -100,57 +100,6 @@ int Application::Run()
     }
 
     return 0;
-}
-
-void Application::HandleInput(float deltaTime)
-{
-    Camera& camera = scene.GetMainCamera();
-
-    const float moveSpeed = 3.0f;
-    const float moveAmount = moveSpeed * deltaTime;
-
-    if (input.IsKeyDown('W'))
-    {
-        camera.MoveForward(moveAmount);
-    }
-
-    if (input.IsKeyDown('S'))
-    {
-        camera.MoveForward(-moveAmount);
-    }
-
-    if (input.IsKeyDown('A'))
-    {
-        camera.MoveRight(-moveAmount);
-    }
-
-    if (input.IsKeyDown('D'))
-    {
-        camera.MoveRight(moveAmount);
-    }
-
-    if (input.IsKeyDown('Q'))
-    {
-        camera.MoveUp(-moveAmount);
-    }
-
-    if (input.IsKeyDown('E'))
-    {
-        camera.MoveUp(moveAmount);
-    }
-
-    if (input.IsKeyDown(VK_RBUTTON))
-    {
-        const float mouseSensitivity = 0.003f;
-
-        const float yawDelta =
-            static_cast<float>(input.GetMouseDeltaX()) * mouseSensitivity;
-
-        const float pitchDelta =
-            static_cast<float>(input.GetMouseDeltaY()) * -mouseSensitivity;
-
-        camera.Rotate(yawDelta, pitchDelta);
-    }
 }
 
 void Application::UpdateWindowTitle(float deltaTime)

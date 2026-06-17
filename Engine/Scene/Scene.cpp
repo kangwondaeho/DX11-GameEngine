@@ -1,6 +1,8 @@
 #include "Scene.h"
+
 #include "RotatorComponent.h"
 #include "MeshRendererComponent.h"
+#include "CameraControllerComponent.h"
 
 #include <DirectXMath.h>
 
@@ -17,11 +19,31 @@ GameObject* Scene::CreateGameObject(const std::string& name)
     return rawPointer;
 }
 
-void Scene::Initialize(float aspectRatio, const Mesh* cubeMesh, const Mesh* planeMesh)
+GameObject* Scene::FindGameObjectByName(const std::string& name)
+{
+    for (auto& gameObject : gameObjects)
+    {
+        if (gameObject->GetName() == name)
+        {
+            return gameObject.get();
+        }
+    }
+
+    return nullptr;
+}
+
+void Scene::Initialize(
+    float aspectRatio,
+    const Mesh* cubeMesh,
+    const Mesh* planeMesh,
+    Input* input)
 {
     mainCamera.SetPosition(0.0f, 1.5f, -6.0f);
     mainCamera.SetTarget(0.0f, 0.0f, 0.0f);
     mainCamera.SetPerspective(XM_PIDIV4, aspectRatio, 0.1f, 100.0f);
+
+    GameObject* cameraController = CreateGameObject("CameraController");
+    cameraController->AddComponent<CameraControllerComponent>(&mainCamera, input);
 
     GameObject* cube1 = CreateGameObject("Cube1");
     cube1->GetTransform().position = { -1.5f, 0.0f, 0.0f };
@@ -65,17 +87,4 @@ void Scene::Update(float deltaTime)
     {
         gameObject->Update(deltaTime);
     }
-}
-
-GameObject* Scene::FindGameObjectByName(const std::string& name)
-{
-    for (auto& gameObject : gameObjects)
-    {
-        if (gameObject->GetName() == name)
-        {
-            return gameObject.get();
-        }
-    }
-
-    return nullptr;
 }

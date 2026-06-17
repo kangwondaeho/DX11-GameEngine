@@ -14,7 +14,6 @@ public:
     int Run();
 
 private:
-    void HandleInput(float deltaTime);
     void UpdateWindowTitle(float deltaTime);
 
 private:
