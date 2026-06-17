@@ -26,6 +26,16 @@ public:
         name = newName;
     }
 
+    void SetActive(bool newActive)
+    {
+        active = newActive;
+    }
+
+    bool IsActive() const
+    {
+        return active;
+    }
+
     Transform& GetTransform()
     {
         return transform;
@@ -66,6 +76,7 @@ public:
 
 private:
     std::string name;
+    bool active = true;
 
     Transform transform;
     std::vector<std::unique_ptr<Component>> components;

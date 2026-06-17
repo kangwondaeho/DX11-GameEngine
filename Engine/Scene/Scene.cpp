@@ -71,12 +71,12 @@ void Scene::Initialize(
     cube3->GetTransform().position = { 0.0f, 1.3f, 0.0f };
     cube3->GetTransform().scale = { 0.5f, 0.5f, 0.5f };
     cube3->AddComponent<RotatorComponent>(0.3f, 1.0f, 1.5f);
+    cube3->AddComponent<MeshRendererComponent>(
+        cubeMesh,
+        XMFLOAT4(0.6f, 1.0f, 0.5f, 1.0f)
+    );
 
-    MeshRendererComponent* cube3Renderer =
-        cube3->AddComponent<MeshRendererComponent>(
-            cubeMesh,
-            XMFLOAT4(0.6f, 1.0f, 0.5f, 1.0f)
-        );
+    cube3->SetActive(true);
 
     GameObject* floor = CreateGameObject("Floor");
     floor->GetTransform().position = { 0.0f, -1.0f, 0.0f };

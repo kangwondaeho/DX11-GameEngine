@@ -2,6 +2,11 @@
 
 void GameObject::Update(float deltaTime)
 {
+    if (!active)
+    {
+        return;
+    }
+
     for (auto& component : components)
     {
         component->StartInternal();

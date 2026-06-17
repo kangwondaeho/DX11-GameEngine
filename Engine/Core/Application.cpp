@@ -107,6 +107,11 @@ void Application::RenderScene()
 
     for (const auto& gameObject : scene.GetGameObjects())
     {
+        if (!gameObject->IsActive())
+        {
+            continue;
+        }
+
         MeshRendererComponent* meshRenderer =
             gameObject->GetComponent<MeshRendererComponent>();
 
