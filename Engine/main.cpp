@@ -1,6 +1,5 @@
 #include <Windows.h>
-#include "Core/Window.h"
-#include "Renderer/D3D11Renderer.h"
+#include "Core/Application.h"
 
 int WINAPI wWinMain(
     HINSTANCE hInstance,
@@ -8,24 +7,12 @@ int WINAPI wWinMain(
     PWSTR pCmdLine,
     int nCmdShow)
 {
-    Window window;
+    Application app;
 
-    if (!window.Create(hInstance, nCmdShow, 1280, 720))
+    if (!app.Initialize(hInstance, nCmdShow))
     {
         return -1;
     }
 
-    D3D11Renderer renderer;
-
-    if (!renderer.Initialize(window.GetHandle(), 1280, 720))
-    {
-        return -1;
-    }
-
-    while (window.ProcessMessages())
-    {
-        renderer.Render();
-    }
-
-    return 0;
+    return app.Run();
 }
