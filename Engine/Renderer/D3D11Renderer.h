@@ -7,6 +7,8 @@
 #include <wrl/client.h>
 #include <DirectXMath.h>
 
+#include "Mesh.h"
+
 class D3D11Renderer
 {
 public:
@@ -16,7 +18,7 @@ public:
 private:
     bool CreateRenderTarget();
     bool CreateDepthStencilBuffer(int width, int height);
-    bool CreateCubeResources();
+    bool CreateShaderResources();
     bool CreateConstantBuffer();
 
 private:
@@ -29,15 +31,13 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilBuffer;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthStencilView;
 
-    Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
-    Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
 
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
     Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
     Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
 
-    UINT indexCount = 0;
+    Mesh cubeMesh;
 
     int renderWidth = 0;
     int renderHeight = 0;

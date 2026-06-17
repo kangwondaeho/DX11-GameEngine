@@ -1,18 +1,13 @@
 #include "D3D11Renderer.h"
 
 #include <DirectXMath.h>
+#include <cstddef>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
 using namespace DirectX;
-
-struct Vertex
-{
-    float position[3];
-    float color[4];
-};
 
 struct TransformConstantBuffer
 {
@@ -96,7 +91,13 @@ bool D3D11Renderer::Initialize(HWND hwnd, int width, int height)
     renderWidth = width;
     renderHeight = height;
 
-    if (!CreateCubeResources())
+    if (!cubeMesh.CreateCube(device.Get()))
+    {
+        MessageBox(nullptr, L"Create cube mesh failed", L"Error", MB_OK);
+        return false;
+    }
+
+    if (!CreateShaderResources())
     {
         return false;
     }
@@ -105,8 +106,6 @@ bool D3D11Renderer::Initialize(HWND hwnd, int width, int height)
     {
         return false;
     }
-
-    return true;
 }
 
 bool D3D11Renderer::CreateRenderTarget()
@@ -194,92 +193,8 @@ bool CompileShaderFromFile(
     return true;
 }
 
-bool D3D11Renderer::CreateCubeResources()
+bool D3D11Renderer::CreateShaderResources()
 {
-    Vertex vertices[] =
-    {
-        // 앞면
-        { { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-        { {  0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-        { {  0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
-        { { -0.5f, -0.5f, -0.5f }, { 1.0f, 1.0f, 0.0f, 1.0f } },
-
-        // 뒷면
-        { { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f } },
-        { {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f, 1.0f, 1.0f } },
-        { {  0.5f, -0.5f,  0.5f }, { 1.0f, 1.0f, 1.0f, 1.0f } },
-        { { -0.5f, -0.5f,  0.5f }, { 0.2f, 0.2f, 0.2f, 1.0f } },
-    };
-
-    UINT indices[] =
-    {
-        // 앞면
-        0, 1, 2,
-        0, 2, 3,
-
-        // 뒷면
-        4, 6, 5,
-        4, 7, 6,
-
-        // 왼쪽
-        4, 0, 3,
-        4, 3, 7,
-
-        // 오른쪽
-        1, 5, 6,
-        1, 6, 2,
-
-        // 위
-        4, 5, 1,
-        4, 1, 0,
-
-        // 아래
-        3, 2, 6,
-        3, 6, 7
-    };
-
-    indexCount = static_cast<UINT>(indexCount = sizeof(indices) / sizeof(UINT));
-
-    D3D11_BUFFER_DESC vertexBufferDesc = {};
-    vertexBufferDesc.ByteWidth = sizeof(vertices);
-    vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA vertexData = {};
-    vertexData.pSysMem = vertices;
-
-    HRESULT hr = device->CreateBuffer(
-        &vertexBufferDesc,
-        &vertexData,
-        vertexBuffer.GetAddressOf()
-    );
-
-    if (FAILED(hr))
-    {
-        MessageBox(nullptr, L"Create vertex buffer failed", L"Error", MB_OK);
-        return false;
-    }
-
-    D3D11_BUFFER_DESC indexBufferDesc = {};
-    indexBufferDesc.ByteWidth = sizeof(indices);
-    indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA indexData = {};
-    indexData.pSysMem = indices;
-
-    hr = device->CreateBuffer(
-        &indexBufferDesc,
-        &indexData,
-        indexBuffer.GetAddressOf()
-    );
-
-    if (FAILED(hr))
-    {
-        MessageBox(nullptr, L"Create index buffer failed", L"Error", MB_OK);
-        return false;
-    }
-
     Microsoft::WRL::ComPtr<ID3DBlob> vertexShaderBlob;
     Microsoft::WRL::ComPtr<ID3DBlob> pixelShaderBlob;
 
@@ -301,7 +216,7 @@ bool D3D11Renderer::CreateCubeResources()
         return false;
     }
 
-    hr = device->CreateVertexShader(
+    HRESULT hr = device->CreateVertexShader(
         vertexShaderBlob->GetBufferPointer(),
         vertexShaderBlob->GetBufferSize(),
         nullptr,
@@ -334,7 +249,7 @@ bool D3D11Renderer::CreateCubeResources()
             0,
             DXGI_FORMAT_R32G32B32_FLOAT,
             0,
-            0,
+            offsetof(Vertex, position),
             D3D11_INPUT_PER_VERTEX_DATA,
             0
         },
@@ -343,7 +258,7 @@ bool D3D11Renderer::CreateCubeResources()
             0,
             DXGI_FORMAT_R32G32B32A32_FLOAT,
             0,
-            12,
+            offsetof(Vertex, color),
             D3D11_INPUT_PER_VERTEX_DATA,
             0
         }
@@ -382,25 +297,7 @@ void D3D11Renderer::Render(DirectX::FXMMATRIX worldMatrix)
         0
     );
 
-    UINT stride = sizeof(Vertex);
-    UINT offset = 0;
-
     context->IASetInputLayout(inputLayout.Get());
-
-    context->IASetVertexBuffers(
-        0,
-        1,
-        vertexBuffer.GetAddressOf(),
-        &stride,
-        &offset
-    );
-
-    context->IASetIndexBuffer(
-        indexBuffer.Get(),
-        DXGI_FORMAT_R32_UINT,
-        0
-    );
-
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     context->VSSetShader(vertexShader.Get(), nullptr, 0);
@@ -441,7 +338,7 @@ void D3D11Renderer::Render(DirectX::FXMMATRIX worldMatrix)
         constantBuffer.GetAddressOf()
     );
 
-    context->DrawIndexed(indexCount, 0, 0);
+    cubeMesh.Draw(context.Get());
 
     swapChain->Present(1, 0);
 }
