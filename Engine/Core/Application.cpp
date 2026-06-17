@@ -16,7 +16,7 @@ bool Application::Initialize(HINSTANCE hInstance, int nCmdShow)
     const float aspectRatio =
         static_cast<float>(WindowWidth) / static_cast<float>(WindowHeight);
 
-    scene.Initialize(aspectRatio);
+    scene.Initialize(aspectRatio, &renderer.GetCubeMesh());
     timer.Initialize();
 
     return true;
@@ -38,13 +38,23 @@ int Application::Run()
 
         for (const auto& gameObject : scene.GetGameObjects())
         {
-            if (!gameObject->GetComponent<MeshRendererComponent>())
+            MeshRendererComponent* meshRenderer =
+                gameObject->GetComponent<MeshRendererComponent>();
+
+            if (!meshRenderer)
+            {
+                continue;
+            }
+
+            const Mesh* mesh = meshRenderer->GetMesh();
+
+            if (!mesh)
             {
                 continue;
             }
 
             renderer.DrawMesh(
-                renderer.GetCubeMesh(),
+                *mesh,
                 gameObject->GetTransform().GetWorldMatrix(),
                 camera.GetViewMatrix(),
                 camera.GetProjectionMatrix()

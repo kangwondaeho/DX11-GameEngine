@@ -5,10 +5,12 @@
 #include "GameObject.h"
 #include "Camera.h"
 
+class Mesh;
+
 class Scene
 {
 public:
-    void Initialize(float aspectRatio);
+    void Initialize(float aspectRatio, const Mesh* defaultMesh);
     void Update(float deltaTime);
 
     const std::vector<std::unique_ptr<GameObject>>& GetGameObjects() const
