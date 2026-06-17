@@ -28,7 +28,7 @@ bool Window::Create(HINSTANCE hInstance, int nCmdShow, int windowWidth, int wind
     hwnd = CreateWindowEx(
         0,
         CLASS_NAME,
-        L"Lightweight VR Engine",
+        L"OpenXR DX11 GameEngine",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -127,4 +127,12 @@ LRESULT Window::HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam)
     }
 
     return DefWindowProc(hwnd, msg, wParam, lParam);
+}
+
+void Window::SetTitle(const wchar_t* title)
+{
+    if (hwnd)
+    {
+        SetWindowText(hwnd, title);
+    }
 }

@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "../Scene/MeshRendererComponent.h"
+#include <string>
 
 bool Application::Initialize(HINSTANCE hInstance, int nCmdShow)
 {
@@ -35,6 +36,8 @@ int Application::Run()
         timer.Tick();
 
         const float deltaTime = timer.GetDeltaTime();
+
+        UpdateWindowTitle(deltaTime);
 
         if (window.WasResized())
         {
@@ -147,5 +150,25 @@ void Application::HandleInput(float deltaTime)
             static_cast<float>(input.GetMouseDeltaY()) * -mouseSensitivity;
 
         camera.Rotate(yawDelta, pitchDelta);
+    }
+}
+
+void Application::UpdateWindowTitle(float deltaTime)
+{
+    fpsUpdateTimer += deltaTime;
+    frameCount++;
+
+    if (fpsUpdateTimer >= 1.0f)
+    {
+        const float fps = static_cast<float>(frameCount) / fpsUpdateTimer;
+
+        std::wstring title =
+            L"OpenXR DX11 GameEngine - FPS: " +
+            std::to_wstring(static_cast<int>(fps));
+
+        window.SetTitle(title.c_str());
+
+        fpsUpdateTimer = 0.0f;
+        frameCount = 0;
     }
 }

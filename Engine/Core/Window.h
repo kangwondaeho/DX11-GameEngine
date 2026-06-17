@@ -16,6 +16,8 @@ public:
     bool WasResized() const { return resized; }
     void ClearResizeFlag() { resized = false; }
 
+    void SetTitle(const wchar_t* title);
+
 private:
     static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
     LRESULT HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam);
