@@ -128,6 +128,7 @@ d3dcompiler.lib;user32.lib
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core\Application.cpp" />
+    <ClCompile Include="Core\Input.cpp" />
     <ClCompile Include="Core\Timer.cpp" />
     <ClCompile Include="Core\Window.cpp" />
     <ClCompile Include="main.cpp" />
@@ -140,6 +141,7 @@ d3dcompiler.lib;user32.lib
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Application.h" />
+    <ClInclude Include="Core\Input.h" />
     <ClInclude Include="Core\Timer.h" />
     <ClInclude Include="Core\Window.h" />
     <ClInclude Include="Renderer\D3D11Renderer.h" />

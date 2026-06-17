@@ -20,6 +20,17 @@ void Camera::SetPerspective(float fieldOfViewYValue, float aspectRatioValue, flo
     farZ = farZValue;
 }
 
+void Camera::Move(float x, float y, float z)
+{
+    position.x += x;
+    position.y += y;
+    position.z += z;
+
+    target.x += x;
+    target.y += y;
+    target.z += z;
+}
+
 XMMATRIX Camera::GetViewMatrix() const
 {
     XMVECTOR eyePosition = XMLoadFloat3(&position);

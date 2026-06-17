@@ -9,6 +9,8 @@ public:
     void SetTarget(float x, float y, float z);
     void SetPerspective(float fieldOfViewY, float aspectRatio, float nearZ, float farZ);
 
+    void Move(float x, float y, float z);
+
     DirectX::XMMATRIX GetViewMatrix() const;
     DirectX::XMMATRIX GetProjectionMatrix() const;
 

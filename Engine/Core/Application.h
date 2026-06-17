@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include "Window.h"
 #include "Timer.h"
+#include "Input.h"
 #include "../Renderer/D3D11Renderer.h"
 #include "../Scene/Scene.h"
 
@@ -13,9 +14,13 @@ public:
     int Run();
 
 private:
+    void HandleInput(float deltaTime);
+
+private:
     Window window;
     D3D11Renderer renderer;
     Timer timer;
+    Input input;
     Scene scene;
 
     static constexpr int WindowWidth = 1280;
