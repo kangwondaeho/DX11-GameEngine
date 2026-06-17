@@ -10,7 +10,7 @@ class D3D11Renderer
 {
 public:
     bool Initialize(HWND hwnd, int width, int height);
-    void Render();
+    void Render(float deltaTime);
 
 private:
     bool CreateRenderTarget();

@@ -36,6 +36,9 @@
     <ClCompile Include="Core\Application.cpp">
       <Filter>소스 파일\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Timer.cpp">
+      <Filter>소스 파일\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Window.h">
@@ -45,6 +48,9 @@
       <Filter>소스 파일\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Core\Application.h">
+      <Filter>소스 파일\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Timer.h">
       <Filter>소스 파일\Core</Filter>
     </ClInclude>
   </ItemGroup>

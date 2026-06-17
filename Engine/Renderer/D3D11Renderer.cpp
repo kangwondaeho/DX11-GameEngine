@@ -366,7 +366,7 @@ bool D3D11Renderer::CreateCubeResources()
     return true;
 }
 
-void D3D11Renderer::Render()
+void D3D11Renderer::Render(float deltaTime)
 {
     const float clearColor[4] = { 0.1f, 0.15f, 0.25f, 1.0f };
 
@@ -406,7 +406,8 @@ void D3D11Renderer::Render()
     context->VSSetShader(vertexShader.Get(), nullptr, 0);
     context->PSSetShader(pixelShader.Get(), nullptr, 0);
 
-    rotationAngle += 0.01f;
+    const float rotationSpeed = 1.5f;
+    rotationAngle += rotationSpeed * deltaTime;
 
     float aspectRatio = static_cast<float>(renderWidth) / static_cast<float>(renderHeight);
 

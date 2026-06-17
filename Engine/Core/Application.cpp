@@ -12,6 +12,8 @@ bool Application::Initialize(HINSTANCE hInstance, int nCmdShow)
         return false;
     }
 
+    timer.Initialize();
+
     return true;
 }
 
@@ -19,7 +21,11 @@ int Application::Run()
 {
     while (window.ProcessMessages())
     {
-        renderer.Render();
+        timer.Tick();
+
+        const float deltaTime = timer.GetDeltaTime();
+
+        renderer.Render(deltaTime);
     }
 
     return 0;

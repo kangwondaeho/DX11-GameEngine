@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include "Window.h"
+#include "Timer.h"
 #include "../Renderer/D3D11Renderer.h"
 
 class Application
@@ -13,6 +14,7 @@ public:
 private:
     Window window;
     D3D11Renderer renderer;
+    Timer timer;
 
     static constexpr int WindowWidth = 1280;
     static constexpr int WindowHeight = 720;
