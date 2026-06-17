@@ -366,7 +366,7 @@ bool D3D11Renderer::CreateCubeResources()
     return true;
 }
 
-void D3D11Renderer::Render(float deltaTime)
+void D3D11Renderer::Render(DirectX::FXMMATRIX worldMatrix)
 {
     const float clearColor[4] = { 0.1f, 0.15f, 0.25f, 1.0f };
 
@@ -406,21 +406,13 @@ void D3D11Renderer::Render(float deltaTime)
     context->VSSetShader(vertexShader.Get(), nullptr, 0);
     context->PSSetShader(pixelShader.Get(), nullptr, 0);
 
-    const float rotationSpeed = 1.5f;
-    rotationAngle += rotationSpeed * deltaTime;
-
-    float aspectRatio = static_cast<float>(renderWidth) / static_cast<float>(renderHeight);
-
-    XMMATRIX world = XMMatrixRotationY(rotationAngle) * XMMatrixRotationX(rotationAngle * 0.5f);
-
-    XMVECTOR eyePosition = XMVectorSet(0.0f, 0.0f, -3.0f, 0.0f);
-    XMVECTOR focusPosition = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-    XMVECTOR upDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    float aspectRatio =
+        static_cast<float>(renderWidth) / static_cast<float>(renderHeight);
 
     XMMATRIX view = XMMatrixLookAtLH(
-        eyePosition,
-        focusPosition,
-        upDirection
+        XMVectorSet(0.0f, 0.0f, -3.0f, 0.0f),
+        XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+        XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
     );
 
     XMMATRIX projection = XMMatrixPerspectiveFovLH(
@@ -431,7 +423,8 @@ void D3D11Renderer::Render(float deltaTime)
     );
 
     TransformConstantBuffer transformData = {};
-    transformData.worldViewProjection = XMMatrixTranspose(world * view * projection);
+    transformData.worldViewProjection =
+        XMMatrixTranspose(worldMatrix * view * projection);
 
     context->UpdateSubresource(
         constantBuffer.Get(),

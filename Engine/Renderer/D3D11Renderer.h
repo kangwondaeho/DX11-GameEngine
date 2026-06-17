@@ -5,12 +5,13 @@
 #include <dxgi.h>
 #include <d3dcompiler.h>
 #include <wrl/client.h>
+#include <DirectXMath.h>
 
 class D3D11Renderer
 {
 public:
     bool Initialize(HWND hwnd, int width, int height);
-    void Render(float deltaTime);
+    void Render(DirectX::FXMMATRIX worldMatrix);
 
 private:
     bool CreateRenderTarget();
@@ -40,5 +41,4 @@ private:
 
     int renderWidth = 0;
     int renderHeight = 0;
-    float rotationAngle = 0.0f;
 };

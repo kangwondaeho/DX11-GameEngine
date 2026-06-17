@@ -12,6 +12,7 @@ bool Application::Initialize(HINSTANCE hInstance, int nCmdShow)
         return false;
     }
 
+    scene.Initialize();
     timer.Initialize();
 
     return true;
@@ -25,7 +26,14 @@ int Application::Run()
 
         const float deltaTime = timer.GetDeltaTime();
 
-        renderer.Render(deltaTime);
+        scene.Update(deltaTime);
+
+        GameObject* mainObject = scene.GetMainObject();
+
+        if (mainObject)
+        {
+            renderer.Render(mainObject->GetTransform().GetWorldMatrix());
+        }
     }
 
     return 0;
