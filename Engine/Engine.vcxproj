@@ -137,6 +137,11 @@ d3dcompiler.lib;user32.lib
     <ClInclude Include="Core\Window.h" />
     <ClInclude Include="Renderer\D3D11Renderer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Basic.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

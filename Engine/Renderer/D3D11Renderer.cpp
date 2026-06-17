@@ -1,4 +1,5 @@
 #include "D3D11Renderer.h"
+#include <cstring>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -118,6 +119,60 @@ bool D3D11Renderer::CreateRenderTarget()
     return true;
 }
 
+bool CompileShaderFromFile(
+    const wchar_t* fileName,
+    const char* entryPoint,
+    const char* target,
+    Microsoft::WRL::ComPtr<ID3DBlob>& shaderBlob)
+{
+    UINT compileFlags = 0;
+
+#ifdef _DEBUG
+    compileFlags |= D3DCOMPILE_DEBUG;
+    compileFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
+
+    HRESULT hr = D3DCompileFromFile(
+        fileName,
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        entryPoint,
+        target,
+        compileFlags,
+        0,
+        shaderBlob.GetAddressOf(),
+        errorBlob.GetAddressOf()
+    );
+
+    if (FAILED(hr))
+    {
+        if (errorBlob)
+        {
+            MessageBoxA(
+                nullptr,
+                static_cast<const char*>(errorBlob->GetBufferPointer()),
+                "Shader Compile Error",
+                MB_OK
+            );
+        }
+        else
+        {
+            MessageBoxW(
+                nullptr,
+                fileName,
+                L"Shader File Not Found or Compile Failed",
+                MB_OK
+            );
+        }
+
+        return false;
+    }
+
+    return true;
+}
+
 bool D3D11Renderer::CreateTriangleResources()
 {
     Vertex vertices[] =
@@ -147,74 +202,24 @@ bool D3D11Renderer::CreateTriangleResources()
         return false;
     }
 
-    const char* shaderSource = R"(
-        struct VSInput
-        {
-            float3 position : POSITION;
-            float4 color : COLOR;
-        };
-
-        struct PSInput
-        {
-            float4 position : SV_POSITION;
-            float4 color : COLOR;
-        };
-
-        PSInput VSMain(VSInput input)
-        {
-            PSInput output;
-            output.position = float4(input.position, 1.0f);
-            output.color = input.color;
-            return output;
-        }
-
-        float4 PSMain(PSInput input) : SV_TARGET
-        {
-            return input.color;
-        }
-    )";
-
     Microsoft::WRL::ComPtr<ID3DBlob> vertexShaderBlob;
     Microsoft::WRL::ComPtr<ID3DBlob> pixelShaderBlob;
-    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
 
-    hr = D3DCompile(
-        shaderSource,
-        strlen(shaderSource),
-        nullptr,
-        nullptr,
-        nullptr,
+    if (!CompileShaderFromFile(
+        L"Shaders/Basic.hlsl",
         "VSMain",
         "vs_5_0",
-        0,
-        0,
-        vertexShaderBlob.GetAddressOf(),
-        errorBlob.GetAddressOf()
-    );
-
-    if (FAILED(hr))
+        vertexShaderBlob))
     {
-        MessageBoxA(nullptr, static_cast<char*>(errorBlob->GetBufferPointer()), "Vertex Shader Error", MB_OK);
         return false;
     }
 
-    hr = D3DCompile(
-        shaderSource,
-        strlen(shaderSource),
-        nullptr,
-        nullptr,
-        nullptr,
+    if (!CompileShaderFromFile(
+        L"Shaders/Basic.hlsl",
         "PSMain",
         "ps_5_0",
-        0,
-        0,
-        pixelShaderBlob.GetAddressOf(),
-        errorBlob.ReleaseAndGetAddressOf()
-    );
-
-    if (FAILED(hr))
+        pixelShaderBlob))
     {
-        MessageBoxA(nullptr, static_cast<char*>(errorBlob->GetBufferPointer()), "Pixel Shader Error", MB_OK);
         return false;
     }
 
