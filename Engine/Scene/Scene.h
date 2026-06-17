@@ -11,9 +11,9 @@ public:
     void Initialize(float aspectRatio);
     void Update(float deltaTime);
 
-    GameObject* GetMainObject()
+    const std::vector<std::unique_ptr<GameObject>>& GetGameObjects() const
     {
-        return mainObject;
+        return gameObjects;
     }
 
     Camera& GetMainCamera()
@@ -23,7 +23,5 @@ public:
 
 private:
     std::vector<std::unique_ptr<GameObject>> gameObjects;
-    GameObject* mainObject = nullptr;
-
     Camera mainCamera;
 };

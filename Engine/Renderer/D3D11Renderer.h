@@ -13,11 +13,16 @@ class D3D11Renderer
 {
 public:
     bool Initialize(HWND hwnd, int width, int height);
-    void Render(
+
+    void BeginFrame();
+
+    void DrawCube(
         DirectX::FXMMATRIX worldMatrix,
         DirectX::CXMMATRIX viewMatrix,
         DirectX::CXMMATRIX projectionMatrix
     );
+
+    void EndFrame();
 
 private:
     bool CreateRenderTarget();

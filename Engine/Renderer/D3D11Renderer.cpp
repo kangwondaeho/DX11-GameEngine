@@ -281,54 +281,6 @@ bool D3D11Renderer::CreateShaderResources()
     return true;
 }
 
-void D3D11Renderer::Render(
-    DirectX::FXMMATRIX worldMatrix,
-    DirectX::CXMMATRIX viewMatrix,
-    DirectX::CXMMATRIX projectionMatrix)
-{
-    const float clearColor[4] = { 0.1f, 0.15f, 0.25f, 1.0f };
-
-    context->ClearRenderTargetView(
-        renderTargetView.Get(),
-        clearColor
-    );
-
-    context->ClearDepthStencilView(
-        depthStencilView.Get(),
-        D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-        1.0f,
-        0
-    );
-
-    context->IASetInputLayout(inputLayout.Get());
-    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    context->VSSetShader(vertexShader.Get(), nullptr, 0);
-    context->PSSetShader(pixelShader.Get(), nullptr, 0);
-
-    TransformConstantBuffer transformData = {};
-    transformData.worldViewProjection =
-        XMMatrixTranspose(worldMatrix * viewMatrix * projectionMatrix);
-
-    context->UpdateSubresource(
-        constantBuffer.Get(),
-        0,
-        nullptr,
-        &transformData,
-        0,
-        0
-    );
-
-    context->VSSetConstantBuffers(
-        0,
-        1,
-        constantBuffer.GetAddressOf()
-    );
-
-    cubeMesh.Draw(context.Get());
-
-    swapChain->Present(1, 0);
-}
 
 bool D3D11Renderer::CreateDepthStencilBuffer(int width, int height)
 {
@@ -390,4 +342,61 @@ bool D3D11Renderer::CreateConstantBuffer()
     }
 
     return true;
+}
+
+void D3D11Renderer::BeginFrame()
+{
+    const float clearColor[4] = { 0.1f, 0.15f, 0.25f, 1.0f };
+
+    context->ClearRenderTargetView(
+        renderTargetView.Get(),
+        clearColor
+    );
+
+    context->ClearDepthStencilView(
+        depthStencilView.Get(),
+        D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+        1.0f,
+        0
+    );
+
+    context->IASetInputLayout(inputLayout.Get());
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    context->VSSetShader(vertexShader.Get(), nullptr, 0);
+    context->PSSetShader(pixelShader.Get(), nullptr, 0);
+}
+
+void D3D11Renderer::DrawCube(
+    DirectX::FXMMATRIX worldMatrix,
+    DirectX::CXMMATRIX viewMatrix,
+    DirectX::CXMMATRIX projectionMatrix)
+{
+    using namespace DirectX;
+
+    TransformConstantBuffer transformData = {};
+    transformData.worldViewProjection =
+        XMMatrixTranspose(worldMatrix * viewMatrix * projectionMatrix);
+
+    context->UpdateSubresource(
+        constantBuffer.Get(),
+        0,
+        nullptr,
+        &transformData,
+        0,
+        0
+    );
+
+    context->VSSetConstantBuffers(
+        0,
+        1,
+        constantBuffer.GetAddressOf()
+    );
+
+    cubeMesh.Draw(context.Get());
+}
+
+void D3D11Renderer::EndFrame()
+{
+    swapChain->Present(1, 0);
 }

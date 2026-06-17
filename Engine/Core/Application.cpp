@@ -31,18 +31,20 @@ int Application::Run()
 
         scene.Update(deltaTime);
 
-        GameObject* mainObject = scene.GetMainObject();
+        Camera& camera = scene.GetMainCamera();
 
-        if (mainObject)
+        renderer.BeginFrame();
+
+        for (const auto& gameObject : scene.GetGameObjects())
         {
-            Camera& camera = scene.GetMainCamera();
-
-            renderer.Render(
-                mainObject->GetTransform().GetWorldMatrix(),
+            renderer.DrawCube(
+                gameObject->GetTransform().GetWorldMatrix(),
                 camera.GetViewMatrix(),
                 camera.GetProjectionMatrix()
             );
         }
+
+        renderer.EndFrame();
     }
 
     return 0;
