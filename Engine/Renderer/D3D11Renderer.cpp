@@ -74,7 +74,7 @@ bool D3D11Renderer::Initialize(HWND hwnd, int width, int height)
 
     context->RSSetViewports(1, &viewport);
 
-    if (!CreateTriangleResources())
+    if (!CreateQuadResources())
     {
         return false;
     }
@@ -173,14 +173,24 @@ bool CompileShaderFromFile(
     return true;
 }
 
-bool D3D11Renderer::CreateTriangleResources()
+bool D3D11Renderer::CreateQuadResources()
 {
     Vertex vertices[] =
     {
-        { {  0.0f,  0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-        { {  0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-        { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+        // position                  // color
+        { { -0.5f,  0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } }, // 0: 왼쪽 위
+        { {  0.5f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } }, // 1: 오른쪽 위
+        { {  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }, // 2: 오른쪽 아래
+        { { -0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } }, // 3: 왼쪽 아래
     };
+
+    UINT indices[] =
+    {
+        0, 1, 2,
+        0, 2, 3
+    };
+
+    indexCount = 6;
 
     D3D11_BUFFER_DESC vertexBufferDesc = {};
     vertexBufferDesc.ByteWidth = sizeof(vertices);
@@ -199,6 +209,26 @@ bool D3D11Renderer::CreateTriangleResources()
     if (FAILED(hr))
     {
         MessageBox(nullptr, L"Create vertex buffer failed", L"Error", MB_OK);
+        return false;
+    }
+
+    D3D11_BUFFER_DESC indexBufferDesc = {};
+    indexBufferDesc.ByteWidth = sizeof(indices);
+    indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA indexData = {};
+    indexData.pSysMem = indices;
+
+    hr = device->CreateBuffer(
+        &indexBufferDesc,
+        &indexData,
+        indexBuffer.GetAddressOf()
+    );
+
+    if (FAILED(hr))
+    {
+        MessageBox(nullptr, L"Create index buffer failed", L"Error", MB_OK);
         return false;
     }
 
@@ -310,12 +340,18 @@ void D3D11Renderer::Render()
         &offset
     );
 
+    context->IASetIndexBuffer(
+        indexBuffer.Get(),
+        DXGI_FORMAT_R32_UINT,
+        0
+    );
+
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     context->VSSetShader(vertexShader.Get(), nullptr, 0);
     context->PSSetShader(pixelShader.Get(), nullptr, 0);
 
-    context->Draw(3, 0);
+    context->DrawIndexed(indexCount, 0, 0);
 
     swapChain->Present(1, 0);
 }
