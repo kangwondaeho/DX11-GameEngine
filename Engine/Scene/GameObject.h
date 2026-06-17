@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <utility>
 #include "Transform.h"
 #include "Component.h"
 
@@ -28,6 +29,20 @@ public:
         components.push_back(std::move(component));
 
         return rawPointer;
+    }
+
+    template <typename T>
+    T* GetComponent()
+    {
+        for (auto& component : components)
+        {
+            if (T* casted = dynamic_cast<T*>(component.get()))
+            {
+                return casted;
+            }
+        }
+
+        return nullptr;
     }
 
     void Update(float deltaTime);

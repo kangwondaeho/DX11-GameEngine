@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "RotatorComponent.h"
+#include "MeshRendererComponent.h"
 
 #include <DirectXMath.h>
 
@@ -15,18 +16,21 @@ void Scene::Initialize(float aspectRatio)
     cube1->GetTransform().position = { -1.5f, 0.0f, 0.0f };
     cube1->GetTransform().scale = { 1.0f, 1.0f, 1.0f };
     cube1->AddComponent<RotatorComponent>(0.75f, 1.5f, 0.0f);
+    cube1->AddComponent<MeshRendererComponent>();
     gameObjects.push_back(std::move(cube1));
 
     auto cube2 = std::make_unique<GameObject>();
     cube2->GetTransform().position = { 1.5f, 0.0f, 0.0f };
     cube2->GetTransform().scale = { 0.75f, 0.75f, 0.75f };
     cube2->AddComponent<RotatorComponent>(1.2f, 0.5f, 0.0f);
+    cube2->AddComponent<MeshRendererComponent>();
     gameObjects.push_back(std::move(cube2));
 
     auto cube3 = std::make_unique<GameObject>();
     cube3->GetTransform().position = { 0.0f, 1.3f, 0.0f };
     cube3->GetTransform().scale = { 0.5f, 0.5f, 0.5f };
     cube3->AddComponent<RotatorComponent>(0.3f, 1.0f, 1.5f);
+    cube3->AddComponent<MeshRendererComponent>();
     gameObjects.push_back(std::move(cube3));
 }
 

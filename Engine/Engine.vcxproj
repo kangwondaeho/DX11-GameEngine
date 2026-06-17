@@ -147,6 +147,7 @@ d3dcompiler.lib;user32.lib
     <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Scene\Component.h" />
     <ClInclude Include="Scene\GameObject.h" />
+    <ClInclude Include="Scene\MeshRendererComponent.h" />
     <ClInclude Include="Scene\RotatorComponent.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Scene\Transform.h" />

@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "../Scene/MeshRendererComponent.h"
 
 bool Application::Initialize(HINSTANCE hInstance, int nCmdShow)
 {
@@ -37,6 +38,11 @@ int Application::Run()
 
         for (const auto& gameObject : scene.GetGameObjects())
         {
+            if (!gameObject->GetComponent<MeshRendererComponent>())
+            {
+                continue;
+            }
+
             renderer.DrawCube(
                 gameObject->GetTransform().GetWorldMatrix(),
                 camera.GetViewMatrix(),
