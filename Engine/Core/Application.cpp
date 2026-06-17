@@ -1,5 +1,9 @@
 #include "Application.h"
+
 #include "../Scene/MeshRendererComponent.h"
+#include "../Scene/Camera.h"
+
+#include <DirectXMath.h>
 #include <string>
 
 bool Application::Initialize(HINSTANCE hInstance, int nCmdShow)
@@ -66,37 +70,7 @@ int Application::Run()
 
         scene.Update(deltaTime);
 
-        Camera& camera = scene.GetMainCamera();
-
-        renderer.BeginFrame();
-
-        for (const auto& gameObject : scene.GetGameObjects())
-        {
-            MeshRendererComponent* meshRenderer =
-                gameObject->GetComponent<MeshRendererComponent>();
-
-            if (!meshRenderer)
-            {
-                continue;
-            }
-
-            const Mesh* mesh = meshRenderer->GetMesh();
-
-            if (!mesh)
-            {
-                continue;
-            }
-
-            renderer.DrawMesh(
-                *mesh,
-                gameObject->GetTransform().GetWorldMatrix(),
-                camera.GetViewMatrix(),
-                camera.GetProjectionMatrix(),
-                meshRenderer->GetColor()
-            );
-        }
-
-        renderer.EndFrame();
+        RenderScene();
     }
 
     return 0;
@@ -120,4 +94,42 @@ void Application::UpdateWindowTitle(float deltaTime)
         fpsUpdateTimer = 0.0f;
         frameCount = 0;
     }
+}
+
+void Application::RenderScene()
+{
+    Camera& camera = scene.GetMainCamera();
+
+    DirectX::XMMATRIX viewMatrix = camera.GetViewMatrix();
+    DirectX::XMMATRIX projectionMatrix = camera.GetProjectionMatrix();
+
+    renderer.BeginFrame();
+
+    for (const auto& gameObject : scene.GetGameObjects())
+    {
+        MeshRendererComponent* meshRenderer =
+            gameObject->GetComponent<MeshRendererComponent>();
+
+        if (!meshRenderer)
+        {
+            continue;
+        }
+
+        const Mesh* mesh = meshRenderer->GetMesh();
+
+        if (!mesh)
+        {
+            continue;
+        }
+
+        renderer.DrawMesh(
+            *mesh,
+            gameObject->GetTransform().GetWorldMatrix(),
+            viewMatrix,
+            projectionMatrix,
+            meshRenderer->GetColor()
+        );
+    }
+
+    renderer.EndFrame();
 }

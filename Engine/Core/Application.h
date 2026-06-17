@@ -1,9 +1,11 @@
 #pragma once
 
 #include <Windows.h>
+
 #include "Window.h"
 #include "Timer.h"
 #include "Input.h"
+
 #include "../Renderer/D3D11Renderer.h"
 #include "../Scene/Scene.h"
 
@@ -15,6 +17,7 @@ public:
 
 private:
     void UpdateWindowTitle(float deltaTime);
+    void RenderScene();
 
 private:
     Window window;
