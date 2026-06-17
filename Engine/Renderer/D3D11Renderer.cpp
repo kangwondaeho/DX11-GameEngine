@@ -367,7 +367,8 @@ void D3D11Renderer::BeginFrame()
     context->PSSetShader(pixelShader.Get(), nullptr, 0);
 }
 
-void D3D11Renderer::DrawCube(
+void D3D11Renderer::DrawMesh(
+    const Mesh& mesh,
     DirectX::FXMMATRIX worldMatrix,
     DirectX::CXMMATRIX viewMatrix,
     DirectX::CXMMATRIX projectionMatrix)
@@ -393,7 +394,7 @@ void D3D11Renderer::DrawCube(
         constantBuffer.GetAddressOf()
     );
 
-    cubeMesh.Draw(context.Get());
+    mesh.Draw(context.Get());
 }
 
 void D3D11Renderer::EndFrame()

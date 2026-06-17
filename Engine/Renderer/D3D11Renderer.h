@@ -16,7 +16,13 @@ public:
 
     void BeginFrame();
 
-    void DrawCube(
+    const Mesh& GetCubeMesh() const
+    {
+        return cubeMesh;
+    }
+
+    void DrawMesh(
+        const Mesh& mesh,
         DirectX::FXMMATRIX worldMatrix,
         DirectX::CXMMATRIX viewMatrix,
         DirectX::CXMMATRIX projectionMatrix

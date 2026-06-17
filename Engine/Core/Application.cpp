@@ -43,7 +43,8 @@ int Application::Run()
                 continue;
             }
 
-            renderer.DrawCube(
+            renderer.DrawMesh(
+                renderer.GetCubeMesh(),
                 gameObject->GetTransform().GetWorldMatrix(),
                 camera.GetViewMatrix(),
                 camera.GetProjectionMatrix()
