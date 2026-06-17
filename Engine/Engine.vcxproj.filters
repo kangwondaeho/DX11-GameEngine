@@ -54,6 +54,9 @@
     <ClCompile Include="Renderer\Mesh.cpp">
       <Filter>소스 파일\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Scene\Camera.cpp">
+      <Filter>소스 파일\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Window.h">
@@ -85,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="Renderer\Mesh.h">
       <Filter>소스 파일\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Camera.h">
+      <Filter>소스 파일\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

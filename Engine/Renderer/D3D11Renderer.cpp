@@ -281,7 +281,10 @@ bool D3D11Renderer::CreateShaderResources()
     return true;
 }
 
-void D3D11Renderer::Render(DirectX::FXMMATRIX worldMatrix)
+void D3D11Renderer::Render(
+    DirectX::FXMMATRIX worldMatrix,
+    DirectX::CXMMATRIX viewMatrix,
+    DirectX::CXMMATRIX projectionMatrix)
 {
     const float clearColor[4] = { 0.1f, 0.15f, 0.25f, 1.0f };
 
@@ -303,25 +306,9 @@ void D3D11Renderer::Render(DirectX::FXMMATRIX worldMatrix)
     context->VSSetShader(vertexShader.Get(), nullptr, 0);
     context->PSSetShader(pixelShader.Get(), nullptr, 0);
 
-    float aspectRatio =
-        static_cast<float>(renderWidth) / static_cast<float>(renderHeight);
-
-    XMMATRIX view = XMMatrixLookAtLH(
-        XMVectorSet(0.0f, 0.0f, -3.0f, 0.0f),
-        XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-        XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
-    );
-
-    XMMATRIX projection = XMMatrixPerspectiveFovLH(
-        XM_PIDIV4,
-        aspectRatio,
-        0.1f,
-        100.0f
-    );
-
     TransformConstantBuffer transformData = {};
     transformData.worldViewProjection =
-        XMMatrixTranspose(worldMatrix * view * projection);
+        XMMatrixTranspose(worldMatrix * viewMatrix * projectionMatrix);
 
     context->UpdateSubresource(
         constantBuffer.Get(),

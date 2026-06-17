@@ -12,7 +12,10 @@ bool Application::Initialize(HINSTANCE hInstance, int nCmdShow)
         return false;
     }
 
-    scene.Initialize();
+    const float aspectRatio =
+        static_cast<float>(WindowWidth) / static_cast<float>(WindowHeight);
+
+    scene.Initialize(aspectRatio);
     timer.Initialize();
 
     return true;
@@ -32,7 +35,13 @@ int Application::Run()
 
         if (mainObject)
         {
-            renderer.Render(mainObject->GetTransform().GetWorldMatrix());
+            Camera& camera = scene.GetMainCamera();
+
+            renderer.Render(
+                mainObject->GetTransform().GetWorldMatrix(),
+                camera.GetViewMatrix(),
+                camera.GetProjectionMatrix()
+            );
         }
     }
 

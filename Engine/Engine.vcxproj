@@ -133,6 +133,7 @@ d3dcompiler.lib;user32.lib
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer\D3D11Renderer.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
+    <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="Scene\GameObject.cpp" />
     <ClCompile Include="Scene\RotatorComponent.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
@@ -143,6 +144,7 @@ d3dcompiler.lib;user32.lib
     <ClInclude Include="Core\Window.h" />
     <ClInclude Include="Renderer\D3D11Renderer.h" />
     <ClInclude Include="Renderer\Mesh.h" />
+    <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Scene\Component.h" />
     <ClInclude Include="Scene\GameObject.h" />
     <ClInclude Include="Scene\RotatorComponent.h" />
