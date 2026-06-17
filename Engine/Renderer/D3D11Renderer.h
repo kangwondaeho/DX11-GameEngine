@@ -21,6 +21,11 @@ public:
         return cubeMesh;
     }
 
+    const Mesh& GetPlaneMesh() const
+    {
+        return planeMesh;
+    }
+
     void DrawMesh(
         const Mesh& mesh,
         DirectX::FXMMATRIX worldMatrix,
@@ -53,6 +58,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
 
     Mesh cubeMesh;
+    Mesh planeMesh;
 
     int renderWidth = 0;
     int renderHeight = 0;

@@ -10,7 +10,7 @@ class Mesh;
 class Scene
 {
 public:
-    void Initialize(float aspectRatio, const Mesh* defaultMesh);
+    void Initialize(float aspectRatio, const Mesh* cubeMesh, const Mesh* planeMesh);
     void Update(float deltaTime);
 
     const std::vector<std::unique_ptr<GameObject>>& GetGameObjects() const

@@ -6,7 +6,7 @@
 
 using namespace DirectX;
 
-void Scene::Initialize(float aspectRatio, const Mesh* defaultMesh)
+void Scene::Initialize(float aspectRatio, const Mesh* cubeMesh, const Mesh* planeMesh)
 {
     mainCamera.SetPosition(0.0f, 0.0f, -5.0f);
     mainCamera.SetTarget(0.0f, 0.0f, 0.0f);
@@ -16,22 +16,28 @@ void Scene::Initialize(float aspectRatio, const Mesh* defaultMesh)
     cube1->GetTransform().position = { -1.5f, 0.0f, 0.0f };
     cube1->GetTransform().scale = { 1.0f, 1.0f, 1.0f };
     cube1->AddComponent<RotatorComponent>(0.75f, 1.5f, 0.0f);
-    cube1->AddComponent<MeshRendererComponent>(defaultMesh);
+    cube1->AddComponent<MeshRendererComponent>(cubeMesh);
     gameObjects.push_back(std::move(cube1));
 
     auto cube2 = std::make_unique<GameObject>();
     cube2->GetTransform().position = { 1.5f, 0.0f, 0.0f };
     cube2->GetTransform().scale = { 0.75f, 0.75f, 0.75f };
     cube2->AddComponent<RotatorComponent>(1.2f, 0.5f, 0.0f);
-    cube2->AddComponent<MeshRendererComponent>(defaultMesh);
+    cube2->AddComponent<MeshRendererComponent>(cubeMesh);
     gameObjects.push_back(std::move(cube2));
 
     auto cube3 = std::make_unique<GameObject>();
     cube3->GetTransform().position = { 0.0f, 1.3f, 0.0f };
     cube3->GetTransform().scale = { 0.5f, 0.5f, 0.5f };
     cube3->AddComponent<RotatorComponent>(0.3f, 1.0f, 1.5f);
-    cube3->AddComponent<MeshRendererComponent>(defaultMesh);
+    cube3->AddComponent<MeshRendererComponent>(cubeMesh);
     gameObjects.push_back(std::move(cube3));
+
+    auto floor = std::make_unique<GameObject>();
+    floor->GetTransform().position = { 0.0f, -1.0f, 0.0f };
+    floor->GetTransform().scale = { 1.0f, 1.0f, 1.0f };
+    floor->AddComponent<MeshRendererComponent>(planeMesh);
+    gameObjects.push_back(std::move(floor));
 }
 
 void Scene::Update(float deltaTime)

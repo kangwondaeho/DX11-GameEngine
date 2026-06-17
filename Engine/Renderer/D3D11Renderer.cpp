@@ -97,6 +97,12 @@ bool D3D11Renderer::Initialize(HWND hwnd, int width, int height)
         return false;
     }
 
+    if (!planeMesh.CreatePlane(device.Get()))
+    {
+        MessageBox(nullptr, L"Create plane mesh failed", L"Error", MB_OK);
+        return false;
+    }
+
     if (!CreateShaderResources())
     {
         return false;

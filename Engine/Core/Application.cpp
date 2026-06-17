@@ -16,7 +16,11 @@ bool Application::Initialize(HINSTANCE hInstance, int nCmdShow)
     const float aspectRatio =
         static_cast<float>(WindowWidth) / static_cast<float>(WindowHeight);
 
-    scene.Initialize(aspectRatio, &renderer.GetCubeMesh());
+    scene.Initialize(
+        aspectRatio,
+        &renderer.GetCubeMesh(),
+        &renderer.GetPlaneMesh()
+    );
     timer.Initialize();
 
     return true;

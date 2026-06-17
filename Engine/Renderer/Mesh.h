@@ -13,6 +13,8 @@ class Mesh
 {
 public:
     bool CreateCube(ID3D11Device* device);
+    bool CreatePlane(ID3D11Device* device);
+
     void Draw(ID3D11DeviceContext* context) const;
 
 private:
