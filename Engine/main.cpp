@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "Core/Window.h"
+#include "Renderer/D3D11Renderer.h"
 
 int WINAPI wWinMain(
     HINSTANCE hInstance,
@@ -14,10 +15,16 @@ int WINAPI wWinMain(
         return -1;
     }
 
+    D3D11Renderer renderer;
+
+    if (!renderer.Initialize(window.GetHandle(), 1280, 720))
+    {
+        return -1;
+    }
+
     while (window.ProcessMessages())
     {
-        // 아직 DirectX 없음
-        // 나중에 Update(), Render() 들어갈 자리
+        renderer.Render();
     }
 
     return 0;
