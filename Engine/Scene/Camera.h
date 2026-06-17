@@ -9,15 +9,24 @@ public:
     void SetTarget(float x, float y, float z);
     void SetPerspective(float fieldOfViewY, float aspectRatio, float nearZ, float farZ);
 
-    void Move(float x, float y, float z);
+    void MoveForward(float distance);
+    void MoveRight(float distance);
+    void MoveUp(float distance);
+
+    void Rotate(float yawDelta, float pitchDelta);
 
     DirectX::XMMATRIX GetViewMatrix() const;
     DirectX::XMMATRIX GetProjectionMatrix() const;
 
 private:
+    DirectX::XMVECTOR GetForwardVector() const;
+    DirectX::XMVECTOR GetRightVector() const;
+
+private:
     DirectX::XMFLOAT3 position = { 0.0f, 0.0f, -3.0f };
-    DirectX::XMFLOAT3 target = { 0.0f, 0.0f, 0.0f };
-    DirectX::XMFLOAT3 up = { 0.0f, 1.0f, 0.0f };
+
+    float yaw = 0.0f;
+    float pitch = 0.0f;
 
     float fieldOfViewY = DirectX::XM_PIDIV4;
     float aspectRatio = 16.0f / 9.0f;

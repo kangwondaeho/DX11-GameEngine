@@ -21,6 +21,8 @@ bool Application::Initialize(HINSTANCE hInstance, int nCmdShow)
         &renderer.GetCubeMesh(),
         &renderer.GetPlaneMesh()
     );
+
+    input.Initialize(window.GetHandle());
     timer.Initialize();
 
     return true;
@@ -33,6 +35,8 @@ int Application::Run()
         timer.Tick();
 
         const float deltaTime = timer.GetDeltaTime();
+
+        input.Update(window.GetHandle());
 
         HandleInput(deltaTime);
 
@@ -83,31 +87,44 @@ void Application::HandleInput(float deltaTime)
 
     if (input.IsKeyDown('W'))
     {
-        camera.Move(0.0f, 0.0f, moveAmount);
+        camera.MoveForward(moveAmount);
     }
 
     if (input.IsKeyDown('S'))
     {
-        camera.Move(0.0f, 0.0f, -moveAmount);
+        camera.MoveForward(-moveAmount);
     }
 
     if (input.IsKeyDown('A'))
     {
-        camera.Move(-moveAmount, 0.0f, 0.0f);
+        camera.MoveRight(-moveAmount);
     }
 
     if (input.IsKeyDown('D'))
     {
-        camera.Move(moveAmount, 0.0f, 0.0f);
+        camera.MoveRight(moveAmount);
     }
 
     if (input.IsKeyDown('Q'))
     {
-        camera.Move(0.0f, -moveAmount, 0.0f);
+        camera.MoveUp(-moveAmount);
     }
 
     if (input.IsKeyDown('E'))
     {
-        camera.Move(0.0f, moveAmount, 0.0f);
+        camera.MoveUp(moveAmount);
+    }
+
+    if (input.IsKeyDown(VK_RBUTTON))
+    {
+        const float mouseSensitivity = 0.003f;
+
+        const float yawDelta =
+            static_cast<float>(input.GetMouseDeltaX()) * mouseSensitivity;
+
+        const float pitchDelta =
+            static_cast<float>(input.GetMouseDeltaY()) * -mouseSensitivity;
+
+        camera.Rotate(yawDelta, pitchDelta);
     }
 }
