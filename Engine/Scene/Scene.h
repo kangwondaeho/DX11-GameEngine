@@ -13,6 +13,8 @@ public:
     void Initialize(float aspectRatio, const Mesh* cubeMesh, const Mesh* planeMesh);
     void Update(float deltaTime);
 
+    GameObject* CreateGameObject();
+
     const std::vector<std::unique_ptr<GameObject>>& GetGameObjects() const
     {
         return gameObjects;
