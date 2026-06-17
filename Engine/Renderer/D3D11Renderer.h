@@ -13,6 +13,7 @@ class D3D11Renderer
 {
 public:
     bool Initialize(HWND hwnd, int width, int height);
+    bool Resize(int width, int height);
 
     void BeginFrame();
 

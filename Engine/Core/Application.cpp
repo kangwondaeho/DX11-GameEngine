@@ -36,6 +36,27 @@ int Application::Run()
 
         const float deltaTime = timer.GetDeltaTime();
 
+        if (window.WasResized())
+        {
+            int width = window.GetWidth();
+            int height = window.GetHeight();
+
+            if (renderer.Resize(width, height))
+            {
+                float aspectRatio =
+                    static_cast<float>(width) / static_cast<float>(height);
+
+                scene.GetMainCamera().SetPerspective(
+                    DirectX::XM_PIDIV4,
+                    aspectRatio,
+                    0.1f,
+                    100.0f
+                );
+            }
+
+            window.ClearResizeFlag();
+        }
+
         input.Update(window.GetHandle());
 
         HandleInput(deltaTime);

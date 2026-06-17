@@ -7,7 +7,7 @@ bool Window::Create(HINSTANCE hInstance, int nCmdShow, int windowWidth, int wind
     width = windowWidth;
     height = windowHeight;
 
-    const wchar_t CLASS_NAME[] = L"OpenXRDX11GameEngineWindowClass";
+    const wchar_t CLASS_NAME[] = L"LightweightVREngineWindowClass";
 
     WNDCLASSEX wc = {};
     wc.cbSize = sizeof(WNDCLASSEX);
@@ -28,7 +28,7 @@ bool Window::Create(HINSTANCE hInstance, int nCmdShow, int windowWidth, int wind
     hwnd = CreateWindowEx(
         0,
         CLASS_NAME,
-        L"OpenXR-DX11-GameEngine",
+        L"Lightweight VR Engine",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -37,7 +37,7 @@ bool Window::Create(HINSTANCE hInstance, int nCmdShow, int windowWidth, int wind
         nullptr,
         nullptr,
         hInstance,
-        nullptr
+        this
     );
 
     if (!hwnd)
@@ -72,8 +72,55 @@ bool Window::ProcessMessages()
 
 LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    Window* window = nullptr;
+
+    if (msg == WM_NCCREATE)
+    {
+        CREATESTRUCT* createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
+        window = reinterpret_cast<Window*>(createStruct->lpCreateParams);
+
+        window->hwnd = hwnd;
+
+        SetWindowLongPtr(
+            hwnd,
+            GWLP_USERDATA,
+            reinterpret_cast<LONG_PTR>(window)
+        );
+    }
+    else
+    {
+        window = reinterpret_cast<Window*>(
+            GetWindowLongPtr(hwnd, GWLP_USERDATA)
+            );
+    }
+
+    if (window)
+    {
+        return window->HandleMessage(msg, wParam, lParam);
+    }
+
+    return DefWindowProc(hwnd, msg, wParam, lParam);
+}
+
+LRESULT Window::HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam)
+{
     switch (msg)
     {
+    case WM_SIZE:
+    {
+        int newWidth = LOWORD(lParam);
+        int newHeight = HIWORD(lParam);
+
+        if (newWidth > 0 && newHeight > 0)
+        {
+            width = newWidth;
+            height = newHeight;
+            resized = true;
+        }
+
+        return 0;
+    }
+
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;

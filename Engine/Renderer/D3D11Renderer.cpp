@@ -458,3 +458,62 @@ void D3D11Renderer::EndFrame()
 {
     swapChain->Present(1, 0);
 }
+
+bool D3D11Renderer::Resize(int width, int height)
+{
+    if (width <= 0 || height <= 0)
+    {
+        return false;
+    }
+
+    renderWidth = width;
+    renderHeight = height;
+
+    context->OMSetRenderTargets(0, nullptr, nullptr);
+
+    renderTargetView.Reset();
+    depthStencilView.Reset();
+    depthStencilBuffer.Reset();
+
+    HRESULT hr = swapChain->ResizeBuffers(
+        0,
+        width,
+        height,
+        DXGI_FORMAT_UNKNOWN,
+        0
+    );
+
+    if (FAILED(hr))
+    {
+        MessageBox(nullptr, L"ResizeBuffers failed", L"Error", MB_OK);
+        return false;
+    }
+
+    if (!CreateRenderTarget())
+    {
+        return false;
+    }
+
+    if (!CreateDepthStencilBuffer(width, height))
+    {
+        return false;
+    }
+
+    context->OMSetRenderTargets(
+        1,
+        renderTargetView.GetAddressOf(),
+        depthStencilView.Get()
+    );
+
+    D3D11_VIEWPORT viewport = {};
+    viewport.TopLeftX = 0.0f;
+    viewport.TopLeftY = 0.0f;
+    viewport.Width = static_cast<float>(width);
+    viewport.Height = static_cast<float>(height);
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+
+    context->RSSetViewports(1, &viewport);
+
+    return true;
+}
